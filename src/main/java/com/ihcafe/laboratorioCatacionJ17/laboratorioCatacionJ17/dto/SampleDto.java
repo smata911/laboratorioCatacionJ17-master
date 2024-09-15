@@ -1,66 +1,54 @@
 package com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.model.Producer;
-import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.model.TypeProcess;
-import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.model.TypeSample;
-import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.model.Varieties;
-import lombok.Builder;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.model.*;
+import lombok.*;
 
-import javax.validation.constraints.*;
+
+//import javax.validation.constraints.NotBlank;
+//import javax.validation.constraints.NotEmpty;
+//import javax.validation.constraints.Positive;
+//import javax.validation.constraints.Size;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
 
+@JsonSerialize
 @Builder
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
+@Setter
 public class SampleDto {
 
     @JsonProperty("sample_id")
     private String sampleId;
 
-    @JsonProperty(required = true)
-    @NotBlank
-    @NotEmpty
-    @Size(min = 2, max = 64)
-    private Producer producerId;
-
-    @JsonProperty(required = true)
-    @NotBlank
-    @NotEmpty
-    @Size(min = 2, max = 64)
+    @NotEmpty(message = "El peso de la muestra no puede estar vacío")
+    @Size(min = 2, max = 64, message = "El peso de la muestra debe tener entre 2 y 64 caracteres")
     private String sampleWeight;
 
-    @JsonProperty(required = true)
-    @Positive
-    @Size(min = 2, max = 64)
-    private int samplePorcentageHumidity;
+    @Positive(message = "La humedad de la muestra debe ser un número positivo")
+    private double samplePercentageHumidity;
 
-    @JsonProperty(required = true)
-    @NotBlank
-    @NotEmpty
-    @Size(min = 2, max = 64)
-    private String typeSample;
+    private TypeSample typeSample;
 
-    @JsonProperty(required = true)
-    @NotBlank
-    @NotEmpty
-    @Size(min = 2, max = 64)
     private TypeProcess typeProcess;
 
-    @JsonProperty(required = true)
-    @NotBlank
-    @NotEmpty
-    @Size(min = 2, max = 64)
-    private  String sampleDate;
+    private TypeMarket typeMarket;
 
-    @JsonProperty(required = true)
-    @NotBlank
-    @NotEmpty
-    @Size(min = 2, max = 64)
+    @NotBlank(message = "La fecha de la muestra es obligatoria")
+    @Size(min = 2, max = 64, message = "La fecha de la muestra debe tener entre 2 y 64 caracteres")
+    private String sampleDate;
+
+    @NotBlank(message = "El estado de la muestra es obligatorio")
+    @Size(min = 2, max = 64, message = "El estado de la muestra debe tener entre 2 y 64 caracteres")
     private String sampleStatus;
 
-    @JsonProperty("varietiesSample")
     @Builder.Default
-    private List<Varieties> sampleVarieties=new ArrayList<>();
-
-
+    private List<Varieties> sampleVarieties = new ArrayList<>();
 }

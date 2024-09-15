@@ -12,6 +12,7 @@ public interface ProducerService {
      * @return
      */
     ProducerDto saveProducer(ProducerDto producerDto);
+    ProducerDto updateProducer(final String producerId,ProducerDto producerDto);
 
     /**
      * Find a student by its ID.

@@ -2,12 +2,14 @@ package com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.model;
 
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.dto.TemperatureDto;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Entity
 
@@ -45,5 +47,12 @@ public class Temperature {
         //producer.setProducerStatus(ModelStatus.ACTIVE);
         return temperature;
     }
+
+    public static List<String> DtototemperatureIds(List<Temperature> temperatureDtoList) {
+        return temperatureDtoList.stream()
+                .map(Temperature::getTemperatureId) // Extrae los ids
+                .collect(Collectors.toList()); // Los convierte en una lista de Strings
+    }
+
 
 }

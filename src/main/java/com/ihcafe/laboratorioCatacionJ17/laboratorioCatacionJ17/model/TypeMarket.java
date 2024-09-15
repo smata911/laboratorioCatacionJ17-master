@@ -1,7 +1,7 @@
 package com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.model;
 
 import jakarta.persistence.*;
-import lombok.Builder;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,11 +9,15 @@ import java.util.List;
 @Entity
 @Table(name = "tblTypeMarket")
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
 public class TypeMarket {
 
     @Id
     @Column(name = "typeMarket_id",nullable = false,length = 64)
-    private String typeMarketId;
+    private int typeMarketId;
 
     @Column(name = "typeMarket_name",nullable = false,length = 35)
     private String typeMarketName;
