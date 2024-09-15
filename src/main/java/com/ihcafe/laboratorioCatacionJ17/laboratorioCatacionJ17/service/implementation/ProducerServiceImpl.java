@@ -60,6 +60,35 @@ public class ProducerServiceImpl implements ProducerService {
     }
 
 
+
+    @Override
+    public ProducerDto updateProducer(final String producerIdentidad, final ProducerDto producerDto) {
+        // Buscar el productor existente por identidad
+        Optional<Producer> existingProducer = producerRepository.findByProducerIdentidad(producerIdentidad);
+        Producer producer = null;
+        // Verificar si el productor existe
+        if (existingProducer.isPresent()) {
+            // El productor ya existe, actualiza los atributos
+            producer = existingProducer.get();
+            producer.setProducerFirstName(producerDto.getProducerFirstName());
+            producer.setProducerLastName(producerDto.getProducerLastName());
+            producer.setProducerGender(producerDto.getProducerGender());
+
+            // Guarda el productor actualizado
+            Producer updatedProducer = producerRepository.save(producer);
+
+            System.out.println("Productor actualizado exitosamente");
+
+        } else {
+            // El productor no existe, lanzar una excepción o manejar el caso
+            System.out.println("Productor no encontrado para actualización");
+
+        }
+        return producerMapper.producerToDto(producer);
+    }
+
+
+
     @Override
     public ProducerDto findProducertById(final String producerId){
         Producer producer=producerRepository.findById(producerId).orElseThrow(()-> ProducerNotFoundException.buildProducerNotFoundExceptionForId(producerId));

@@ -1,11 +1,13 @@
 package com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.model;
 
 
+import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.repository.ProducerRepository;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Table(name = "tblSample")
@@ -46,20 +48,31 @@ public class Sample {
 
     /*relacion de quien lo inserto*/
 
-    //@ManyToOne(fetch = FetchType.LAZY)
-    //@JoinColumn(name = "typeMarket_id")
-    private String  typeMarket;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "typeMarket_id")
+    private TypeMarket  typeMarket;
 
-    @ManyToMany(mappedBy = "varietiesSample",
-            fetch = FetchType.EAGER,
-            cascade = {CascadeType.PERSIST,CascadeType.MERGE,CascadeType.REFRESH})
+    @ManyToMany(fetch = FetchType.EAGER,
+            cascade = CascadeType.PERSIST)
+    @JoinTable(
+            name = "tblHvarietiesSample",
+            joinColumns = @JoinColumn(name = "sample_id"),
+            inverseJoinColumns = @JoinColumn(name = "varieties_id")
+    )
     @Builder.Default
-    private List<Varieties> sampleVarieties=new ArrayList<>();
-
+    private List<Varieties> varietiesSample=new ArrayList<>();
 
     @OneToMany(mappedBy = "sampleId",
             cascade = {CascadeType.REFRESH,CascadeType.MERGE,CascadeType.PERSIST})
     @Builder.Default
    private List<Roast> sampleRoast=new ArrayList<>();
+
+    public static Sample buildFromDto(Sample sample, Producer producer, List<Varieties> variedadesList) {
+        sample.setSampleId(UUID.randomUUID().toString());
+        sample.setProducerId(producer);
+        sample.setVarietiesSample(variedadesList);
+
+        return sample;
+    }
 
 }

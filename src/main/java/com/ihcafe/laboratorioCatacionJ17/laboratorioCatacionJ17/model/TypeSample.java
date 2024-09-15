@@ -10,7 +10,6 @@ import java.util.List;
 @Entity
 @Table(name = "tblTypeSample")
 @Builder
-
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter

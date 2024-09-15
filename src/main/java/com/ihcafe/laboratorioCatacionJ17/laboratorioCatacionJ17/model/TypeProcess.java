@@ -2,12 +2,17 @@ package com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.model;
 
 
 import jakarta.persistence.*;
-
+import lombok.*;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Table(name ="tblTypeProcess" )
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
 public class TypeProcess {
 
     @Id

@@ -3,6 +3,7 @@ package com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.repository;
 import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.model.Producer;
 
 
+import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.model.Roast;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -18,8 +19,7 @@ public interface ProducerRepository extends JpaRepository<Producer,String> {
     Optional<Producer> findByProducerIdentidad(String producerIdentidad);
 
 
-
-    Page<Producer> findByProducerFirstNameContaining(String producerFirstName, Pageable pageable);
+   // Page<Producer> findByProducerFirstNameContaining(String producerFirstName, Pageable pageable);
 
 
 }

@@ -16,6 +16,8 @@ public interface RoastService {
      */
     RoastDto saveRoast(String sampleId,RoastDto roastDto);
 
+    RoastDto updateRoast(String sampleId,RoastDto roastDto);
+
     /**
      * Find a student by its ID.
      * @param roastId String

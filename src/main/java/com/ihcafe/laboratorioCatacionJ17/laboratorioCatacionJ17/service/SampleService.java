@@ -12,7 +12,7 @@ public interface SampleService {
      * @param sampleDto Student
      * @return
      */
-    SampleDto saveSample(SampleDto sampleDto);
+    SampleDto saveSample(String producerIdp,SampleDto sampleDto);
 
     /**
      * Find a student by its ID.
