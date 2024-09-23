@@ -27,10 +27,10 @@ public class Sample {
     private Producer producerId;
 
     @Column(name = "sample_weight",nullable = false)
-    private int sampleWeight;
+    private double sampleWeight;
 
     @Column(name = "sample_porcentage_humidity",nullable = false)
-    private  int samplePorcentageHumidity;
+    private  double samplePercentageHumidity;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "typeSample_id")
@@ -65,7 +65,7 @@ public class Sample {
     @OneToMany(mappedBy = "sampleId",
             cascade = {CascadeType.REFRESH,CascadeType.MERGE,CascadeType.PERSIST})
     @Builder.Default
-   private List<Roast> sampleRoast=new ArrayList<>();
+    private List<Roast> sampleRoast=new ArrayList<>();
 
     public static Sample buildFromDto(Sample sample, Producer producer, List<Varieties> variedadesList) {
         sample.setSampleId(UUID.randomUUID().toString());

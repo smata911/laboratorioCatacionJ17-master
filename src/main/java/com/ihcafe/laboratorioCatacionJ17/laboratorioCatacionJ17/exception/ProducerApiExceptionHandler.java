@@ -11,6 +11,9 @@ import org.springframework.http.ResponseEntity;
 
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
+
+import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -24,7 +27,13 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 
 import javax.persistence.EntityNotFoundException;
-import javax.validation.ConstraintViolationException;
+//import javax.validation.ConstraintViolationException;
+
+import jakarta.validation.ConstraintViolationException;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -35,7 +44,8 @@ import javax.validation.ConstraintViolationException;
 @RestControllerAdvice
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @Slf4j
-public class ProducerApiExceptionHandler extends ResponseEntityExceptionHandler {
+public class ProducerApiExceptionHandler  {
+
 
 
 
@@ -63,25 +73,56 @@ public class ProducerApiExceptionHandler extends ResponseEntityExceptionHandler 
     }
 
 
-    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+//    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+
+//       ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST);
+//        errorResponse.setMessage("Validation error.");
+  //      errorResponse.addValidationErrors(ex.getBindingResult().getFieldErrors());
+    //    errorResponse.addValidationError(ex.getBindingResult().getGlobalErrors());
+      // return buildResponseEntity(errorResponse);
+    //}
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Object> handleValidationExceptions(MethodArgumentNotValidException ex) {
+        Map<String, String> fieldErrors = new HashMap<>();
+        ex.getBindingResult().getFieldErrors().forEach(error -> {
+            fieldErrors.put(error.getField(), error.getDefaultMessage());
+        });
 
         ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST);
         errorResponse.setMessage("Validation error.");
-        errorResponse.addValidationErrors(ex.getBindingResult().getFieldErrors());
-        errorResponse.addValidationError(ex.getBindingResult().getGlobalErrors());
-        return buildResponseEntity(errorResponse);
+        errorResponse.setValidacion(fieldErrors);
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
 
+
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
     protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
         ServletWebRequest servletWebRequest = (ServletWebRequest) request;
-        logger.info(
+        log.info(
                 String.format("%s to %s"
                         , servletWebRequest.getHttpMethod().toString()
                         , servletWebRequest.getRequest().getServletPath()));
         String error = "Malformed JSON request";
         return buildResponseEntity(new ErrorResponse(HttpStatus.BAD_REQUEST, error, ex));
     }
+    //@ExceptionHandler(HttpMessageNotReadableException.class)
+    //protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex, WebRequest request) {
+        // Extrae información de la solicitud si es necesario
+      //  ServletWebRequest servletWebRequest = (ServletWebRequest) request;
+        //log.info(String.format("%s to %s", servletWebRequest.getHttpMethod(), servletWebRequest.getRequest().getServletPath()));
+
+        // Mensaje de error personalizado
+        //String error = "Malformed JSON request";
+
+        // Construye la respuesta de error
+        //ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST, error, ex.getMessage());
+
+        //return buildResponseEntity(errorResponse);
+    //}
 
 
     protected ResponseEntity<Object> handleHttpMessageNotWritable(HttpMessageNotWritableException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {

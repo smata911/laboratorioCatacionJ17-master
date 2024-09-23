@@ -28,13 +28,13 @@ public class Temperature {
     private String temperatureId;
 
     @Column(name = "temperature_heat",nullable = false,length = 30)
-    private String temperatureHeat;
+    private double temperatureHeat;
 
     @Column(name = "temperature_minute",nullable = false,length = 40)
     private String temperature_minute;
 
     @Column(name = "temperature_temperature",nullable = false,length = 30)
-    private String temperatureTemperature;
+    private double temperatureTemperature;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "roast_id")

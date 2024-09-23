@@ -3,25 +3,28 @@ import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.dto.ProducerDto;
 import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.response.BaseResponse;
 import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.response.Response;
 import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.service.ProducerService;
+import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.utils.MessageKey;
+import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.utils.Messages;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import javax.validation.Valid;
+//import javax.validation.Valid;
 
 @RestController
 @RequestMapping(path = "/api/v1/produce")
 @RequiredArgsConstructor
 public class ProducerController {
     private final ProducerService producerService;
-
-
+    private final Messages messages;
     @PostMapping
     public ResponseEntity<? extends Response<ProducerDto>> saveProducer(@RequestBody @Valid ProducerDto producerDto) {
         ProducerDto savedProducer = producerService.saveProducer(producerDto);
         BaseResponse<ProducerDto> producerBaseResponse = new BaseResponse<>();
         return producerBaseResponse
-                .buildResponseEntity(HttpStatus.CREATED, "Producer saved successfully", savedProducer);
+                .buildResponseEntity(HttpStatus.CREATED, "Producer saved successfully"+ messages.getMessage(MessageKey.ENTITY_SAVE.getKey()), savedProducer);
     }
 
     @GetMapping(value = "/{producerId}")
@@ -39,7 +42,7 @@ public class ProducerController {
         // Construir la respuesta
         BaseResponse<ProducerDto> producerBaseResponse = new BaseResponse<>();
         return producerBaseResponse
-                .buildResponseEntity(HttpStatus.OK, "Producer updated successfully", updatedProducer);
+                .buildResponseEntity(HttpStatus.OK, "Producer updated successfully"+messages.getMessage(MessageKey.ENTITY_UPDATE.getKey()), updatedProducer);
     }
 
 

@@ -4,14 +4,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.model.Roast;
 import jakarta.persistence.Column;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Size;
+
 
 @JsonSerialize
 @Builder
@@ -24,23 +23,17 @@ public class TemperatureDto {
     private String temeperatureId;
 
 
-    @JsonProperty(required = true)
-    @NotBlank
-    @NotEmpty
-    @Size(min = 2, max = 64)
-    private String temperatureHeat;
+   // @JsonProperty(required = true)
+    @Min(value = 0,message = "calor  minimo 0")
+    @Max(value = 250,message = "calor maximo 250")
+    private double temperatureHeat;
 
     @JsonProperty(required = true)
-    @NotBlank
-    @NotEmpty
-    @Size(min = 2, max = 64)
+    @Size(min = 3, max = 64)
     private  String temperature_minute;
 
     @JsonProperty(required = true)
-    @NotBlank
-    @NotEmpty
-    @Size(min = 2, max = 64)
-    private String temperatureTemperature;
+    private double temperatureTemperature;
 
     @JsonProperty("roast")
     private Roast roast;

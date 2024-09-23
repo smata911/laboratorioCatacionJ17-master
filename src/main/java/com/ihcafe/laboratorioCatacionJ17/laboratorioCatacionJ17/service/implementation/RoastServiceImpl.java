@@ -1,16 +1,11 @@
 package com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.service.implementation;
 
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.dto.ProducerDto;
 import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.dto.RoastDto;
-import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.dto.TemperatureDto;
 import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.exception.ProducerNotFoundException;
-import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.model.Producer;
 import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.model.Roast;
 import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.model.Sample;
 import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.model.Temperature;
-import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.model.Sample;
 import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.model.mapper.RoastMapper;
 import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.model.mapper.SampleMapper;
 import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.model.mapper.TemperatureMapper;
@@ -18,22 +13,14 @@ import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.repository.Roast
 import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.repository.SampleRepository;
 import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.repository.TemperatureRepository;
 import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.service.RoastService;
-import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.service.TemperatureService;
 import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.utils.Messages;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.repository.query.FluentQuery;
 import org.springframework.stereotype.Service;
 
-import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
-import java.util.function.Function;
 
 @Service
 @RequiredArgsConstructor
@@ -41,29 +28,19 @@ public class RoastServiceImpl implements RoastService{
 
     private final RoastRepository roastRepository;
     private  final SampleRepository sampleRepository;
-
     private final RoastMapper roastMapper;
     private final SampleMapper sampleMapper;
-
-
-
-
-   private final TemperatureRepository temperatureRepository;
+    private final TemperatureRepository temperatureRepository;
     private final TemperatureMapper temperatureMapper;
-   // private final SortingPagingUtils sortingPagingUtils;
 
     private final Messages messages;
-
-
-
     @Override
     public RoastDto saveRoast(final String sampleIdp,final RoastDto roastDto) {
         Roast roast=null;
-        Optional<Sample> existingProducer = sampleRepository.findBySampleId(sampleIdp);
-        if (existingProducer.isPresent()) {
-
-            System.out.println(existingProducer.get().getSampleId());
-            Sample sample = existingProducer.get();
+        Optional<Sample> existingSample= sampleRepository.findBySampleId(sampleIdp);
+        if (existingSample.isPresent()) {
+            System.out.println(existingSample.get().getSampleId());
+            Sample sample = existingSample.get();
             roast = Roast.buildFromDto(this.roastMapper.dtoToRoast(roastDto),sample);
             // Iterar sobre las Temperaturas en RoastDto y mapearlas a entidades Temperature
             List<Temperature> listTemperatures = new ArrayList<>();
@@ -75,34 +52,20 @@ public class RoastServiceImpl implements RoastService{
             }//todo falta validar que los minutos sean diferentes mediante el roast_id
             // Asignar las Temperaturas mapeadas a Roast
             roast.setRoastTemperature(listTemperatures);
-            // Guardar Roast en la base de datos (incluidas las Temperaturas debido a la relación bidireccional)
-            this.roastRepository.save(roast);
-            System.out.println(roastDto.getSampleId());
-        }else{
-            System.out.println("recuerda modificar los mensajes ");
-            return roastMapper.roastToDto(roast);
+            //System.out.println(roastDto.getSampleId());
+        }else if (existingSample.isEmpty()){
+            System.out.println("la muestra no se encuentra");
         }
-
+        this.roastRepository.save(roast);
         return roastMapper.roastToDto(roast);
 
     }
 
     @Override
-    public RoastDto updateRoast(final String roastId, final RoastDto roastDto) {
-        // Verificar si el Sample asociado existe
-        Roast roast=null;
-        String sampleId=roastDto.getSampleId();
-        System.out.println("Sample not found with sampleId"+sampleId);
-        Optional<Sample> existingSampleOpt = sampleRepository.findBySampleId(sampleId);
-        if (!existingSampleOpt.isPresent()) {
-            //throw new ResourceNotFoundException("Sample not found with sampleId: " + sampleIdp);
-            System.out.println("Sample not found with sampleId"+sampleId);
-        }
-        Sample existingSampleObj = existingSampleOpt.get();
+    public RoastDto updateRoast(final String roastId, final RoastDto roastDto) {//todo mejorar los nombres de las variables y quitar
 
-
-        List<String> temperatureIds = Temperature.DtototemperatureIds(roastDto.getRoastTemperature());
-        List<Temperature> temperatureListBaseDatos = temperatureRepository.findAllByTemperatureIdIn(temperatureIds);
+        List<String> getTemperatureDto = Temperature.DtototemperatureIds(roastDto.getRoastTemperature());
+        List<Temperature> temperatureListBaseDatos = temperatureRepository.findAllByTemperatureIdIn(getTemperatureDto);
         // Verificar si el Roast asociado a ese Sample ya existe
         Optional<Roast> existingRoastOpt = roastRepository.findByRoastId(roastId);
         Roast existingRoast = null;
@@ -123,7 +86,7 @@ public class RoastServiceImpl implements RoastService{
             updatedTemperatures.add(temperature);
         }
 
-        boolean existenTemperatures=temperatureListBaseDatos.size()==temperatureIds.size();
+        boolean existenTemperatures=temperatureListBaseDatos.size()==getTemperatureDto.size();
         if (existenTemperatures){
             System.out.println("existe todoo");
             // Actualizar las temperaturas en el Roast

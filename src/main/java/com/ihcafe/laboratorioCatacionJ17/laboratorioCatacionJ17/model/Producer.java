@@ -56,9 +56,9 @@ public class Producer {
         return producer;
     }
 
-    private void setProducerId(final String producerId){
-        this.producerId = producerId;
-    }
+   // private void setProducerId(final String producerId){
+    //    this.producerId = producerId;
+    //}
 
     public void setProducerStatus(ModelStatus modelStatus){
         this.producerStatus = modelStatus;

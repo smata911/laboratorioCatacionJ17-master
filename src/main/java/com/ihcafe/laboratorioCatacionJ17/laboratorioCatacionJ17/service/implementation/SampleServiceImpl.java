@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
+//todo falta el update
 @Service
 @RequiredArgsConstructor
 public class SampleServiceImpl implements SampleService{
@@ -51,11 +51,12 @@ public class SampleServiceImpl implements SampleService{
             }
             sample = Sample.buildFromDto(this.sampleMapper.dtoToSample(sampleDto), producer,varietiesList);
 
-            this.sampleRepository.save(sample);
+
         } else {
             System.out.println("Recuerda modificar los mensajes ");
-            return sampleMapper.sampleToDto(sample);
+           // return sampleMapper.sampleToDto(sample);
         }
+        this.sampleRepository.save(sample);
         return sampleMapper.sampleToDto(sample);
     }
 

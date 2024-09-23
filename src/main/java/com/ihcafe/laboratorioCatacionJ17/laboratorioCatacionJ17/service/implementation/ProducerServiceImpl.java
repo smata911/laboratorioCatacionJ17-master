@@ -6,6 +6,7 @@ import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.model.Producer;
 import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.model.mapper.ProducerMapper;
 import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.repository.ProducerRepository;
 import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.service.ProducerService;
+import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.utils.MessageKey;
 import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.utils.Messages;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -18,39 +19,28 @@ import java.util.Optional;
 public class ProducerServiceImpl implements ProducerService {
 
     private final ProducerRepository producerRepository;
-
-
     private final ProducerMapper producerMapper;
-
-    /*private final SubjectMapper subjectMapper;
-
-    private final SubjectService subjectService;*/
-
-//    private final SortingPagingUtils sortingPagingUtils;
-
     private final Messages messages;
-
-
-
 
     @Override
     public ProducerDto saveProducer(final ProducerDto producerDto) {
         String producerIdentidad = producerDto.getProducerIdentidad();
         Optional<Producer> existingProducer = producerRepository.findByProducerIdentidad(producerIdentidad);
         Producer producer = null;
-
+//validar dto
+           // El productor ya existe, actualiza los atributos
         if (existingProducer.isPresent()) {
-            // El productor ya existe, actualiza los atributos
             producer = existingProducer.get();
             producer.setProducerFirstName(producerDto.getProducerFirstName());
             producer.setProducerLastName(producerDto.getProducerLastName());
             producer.setProducerGender(producerDto.getProducerGender());
+            System.out.println("Ya existe, se actualizó"+messages.getMessage(MessageKey.ENTITY_UPDATE.getKey()));
 
-            System.out.println("Ya existe, se actualizó");
-        } else if(existingProducer.isEmpty()) {
             // El productor no existe, guardalo y genera el uuid
+        } else if(existingProducer.isEmpty()) {
             producer = Producer.buildFromDto(this.producerMapper.dtoToProducer(producerDto));
-            System.out.println("No existe, se guardó");
+            System.out.println(this.producerMapper.dtoToProducer(producerDto).getProducerFirstName());
+            System.out.println("No existe, se guardó"+messages.getMessage(MessageKey.ENTITY_SAVE.getKey()));
         }else {
             System.out.println("esta nul");
         }
@@ -76,12 +66,11 @@ public class ProducerServiceImpl implements ProducerService {
 
             // Guarda el productor actualizado
             Producer updatedProducer = producerRepository.save(producer);
-
-            System.out.println("Productor actualizado exitosamente");
+            System.out.println(messages.getMessage(MessageKey.ENTITY_UPDATE.getKey()));
 
         } else {
             // El productor no existe, lanzar una excepción o manejar el caso
-            System.out.println("Productor no encontrado para actualización");
+            System.out.println(messages.getMessage(MessageKey.ENTITY_NOT_FOUND.getKey()));
 
         }
         return producerMapper.producerToDto(producer);

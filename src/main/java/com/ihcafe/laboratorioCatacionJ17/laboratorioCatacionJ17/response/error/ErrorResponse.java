@@ -7,17 +7,16 @@ import com.fasterxml.jackson.databind.annotation.JsonTypeIdResolver;
 import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.utils.JsonLowerCaseResolver;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.ConstraintViolation;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 
-import javax.validation.ConstraintViolation;
+
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @JsonSerialize
 @JsonTypeIdResolver(JsonLowerCaseResolver.class)
@@ -42,6 +41,8 @@ public class ErrorResponse {
     @JsonProperty("subErrors")
     private List<SubError> subErrors = new ArrayList<>();
 
+    @JsonProperty("validacion")
+    private Map<String, String> validacion = new HashMap<>();
     private ErrorResponse(){
         this.date = Instant.now();
     }
@@ -87,7 +88,7 @@ public class ErrorResponse {
      * @param object object name
      * @param message error message
      */
-    private void addValidationError(String object, String message) {
+    public void addValidationError(String object, String message) {
         this.addSubError(new ValidationError(object, message));
     }
 
@@ -130,6 +131,9 @@ public class ErrorResponse {
                 .forEach(error -> addValidationError(error));
     }
 
+
+
+
     /**
      * Add a list of Object Errors to Sub errors.
      * @param objectErrors
@@ -144,7 +148,7 @@ public class ErrorResponse {
      * Add a constraint violation to sub errors.
      * @param constraintViolation
      */
-    private void addValidationError(ConstraintViolation<?> constraintViolation) {
+    public void addValidationError(ConstraintViolation<?> constraintViolation) {
         this.addValidationError(constraintViolation.getRootBeanClass().getSimpleName(),
                 constraintViolation.getPropertyPath().toString(),
                 constraintViolation.getInvalidValue(),
@@ -159,4 +163,15 @@ public class ErrorResponse {
         constraintViolations
                 .forEach(violation -> addValidationError(violation));
     }
+
+
+
+
+
+
+    public void addValidationError(String field, Object rejectedValue, String message) {
+        this.subErrors.add(new ValidationError(field, rejectedValue, message));
+    }
+
+
 }

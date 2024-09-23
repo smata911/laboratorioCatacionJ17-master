@@ -24,7 +24,6 @@ public class Roast {
     @Column(name = "roast_id",nullable = false,length = 64)
     private String roastId;
 
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name ="sample_id")
     private Sample sampleId;
@@ -36,7 +35,7 @@ public class Roast {
     private String roastTest;
 
     @Column(name = "roast_weight",nullable = false,length = 30)
-    private String roastWeight;
+    private double roastWeight;
 
     @OneToMany(mappedBy = "roast", cascade = { CascadeType.REFRESH, CascadeType.MERGE, CascadeType.PERSIST })
     @JsonManagedReference

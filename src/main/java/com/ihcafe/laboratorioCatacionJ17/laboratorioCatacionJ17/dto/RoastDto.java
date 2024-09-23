@@ -6,11 +6,12 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.model.Roast;
 import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.model.Sample;
 import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.model.Temperature;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.*;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Size;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,30 +23,20 @@ import java.util.List;
 @Setter
 public class RoastDto {
 
-    @JsonProperty("roast_id")
-    private String roastId;
-
-    @JsonProperty("sampleId")
-    private String sampleId;
-
-
     @JsonProperty(required = true)
-    @NotBlank
-    @NotEmpty
+    @NotBlank(message = "El campo roastDate no puede estar vacío.")
     private  String roastDate;
 
     @JsonProperty(required = true)
-    @NotBlank
-    @NotEmpty
-    private String roastTest;
+    @NotBlank(message = "El campo roastTest no puede estar vacío.")
+    private String roastTest;//debe ser una relacion
 
     @JsonProperty(required = true)
-    @NotBlank
-    @NotEmpty
-    private String roastWeight;
+    @Min(value = 90,message = "el peso de muestra minimo es de 90g")//TODO AQUI EL VALUE DEBE SER DINAMICO, PRIMERO SE DEBE CONSULTAR EN BASE DE DATO EL VALOR DE LA MUESTRA Y HACER UNA RESTA CON EL JSON Y QUE ESE SEA EL MINIMO
+    private double roastWeight;
 
 
-    @JsonProperty("roastTemperature")
+    @JsonProperty(value = "roastTemperature",required = true)
     @Builder.Default
     private List<Temperature> roastTemperature = new ArrayList<>();
 
