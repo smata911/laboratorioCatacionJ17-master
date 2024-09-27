@@ -17,7 +17,7 @@ public class TypeProcess {
 
     @Id
     @Column(name = "typeProcess_id",nullable = false,length = 1)
-    private int typeProcessI;
+    private int typeProcessId;
 
     @Column(name = "typeProcess_name",nullable = false,length = 25)
     private  String typeProcessName;

@@ -1,6 +1,7 @@
 package com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.controller;
 
 
+import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.dto.RoastDto;
 import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.dto.SampleDto;
 import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.model.Producer;
 import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.repository.ProducerRepository;
@@ -35,8 +36,17 @@ public class SampleController {
         return sampleBaseResponse
                 .buildResponseEntity(HttpStatus.CREATED, "Rast saved successfully", savedSample);
 
-
-
-
     }
+
+    @PutMapping("/{sampleId}")
+    public ResponseEntity<? extends Response<SampleDto>> updateSample(
+            @PathVariable("sampleId") String sampleId,
+            @RequestBody @Valid SampleDto sampleDto) {
+        SampleDto updatedSample = sampleService.updateSample(sampleId, sampleDto);
+        BaseResponse<SampleDto> response = new BaseResponse<>();
+        return response
+                .buildResponseEntity(HttpStatus.OK, "Sample updated successfully", updatedSample);
+    }
+
+
 }

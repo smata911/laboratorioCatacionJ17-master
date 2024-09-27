@@ -6,19 +6,18 @@ import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.dto.SampleDto;
 
 import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.model.Sample;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
 import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface SampleMapper {
-    Sample dtoToSample(SampleDto dto);
+
     SampleDto sampleToDto(Sample sample);
 
+    //@Mapping(target = "farm", ignore = true) // Se buscará después por el ID
+    Sample dtoToSample(SampleDto dto);
 
-
-    List<Sample> dtotoSample(List<SampleDto> dtos);
-
-    List<Sample> sampleToDto(List<Sample> samples);
-
-
+    List<SampleDto> sampleToDto(List<Sample> samples);
+    List<Sample> dtosToSample(List<SampleDto> dtos);
 }

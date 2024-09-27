@@ -1,6 +1,7 @@
 package com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.model;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.repository.ProducerRepository;
 import jakarta.persistence.*;
 import lombok.*;
@@ -23,8 +24,9 @@ public class Sample {
     private String sampleId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "producer_id")
-    private Producer producerId;
+    @JoinColumn(name = "farm_id")
+    @JsonBackReference // Evita el bucle recursivo
+    private Farm farm;
 
     @Column(name = "sample_weight",nullable = false)
     private double sampleWeight;
@@ -67,9 +69,9 @@ public class Sample {
     @Builder.Default
     private List<Roast> sampleRoast=new ArrayList<>();
 
-    public static Sample buildFromDto(Sample sample, Producer producer, List<Varieties> variedadesList) {
+    public static Sample buildFromDto(Sample sample, Farm farm, List<Varieties> variedadesList) {
         sample.setSampleId(UUID.randomUUID().toString());
-        sample.setProducerId(producer);
+        sample.setFarm(farm);
         sample.setVarietiesSample(variedadesList);
 
         return sample;

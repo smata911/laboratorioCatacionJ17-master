@@ -1,6 +1,7 @@
 package com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.model;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -28,8 +29,8 @@ public class Varieties {
     private String varietiesScientific;
 
     @ManyToMany(mappedBy = "varietiesSample")
-    private List<Sample> sampleVarieties=new ArrayList<>();
-
+    //@JsonBackReference // Evita el bucle recursivo en la serialización
+    private List<Sample> sampleVarieties = new ArrayList<>();
 
 
 //    @ManyToMany(mappedBy = "varietiesSample",

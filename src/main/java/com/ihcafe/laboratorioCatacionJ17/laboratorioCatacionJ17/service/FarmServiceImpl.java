@@ -26,7 +26,7 @@ public class FarmServiceImpl implements FarmService{
     public FarmDto saveFarm(String producerIdp, FarmDto farmDto) {
         String farmName = farmDto.getFarmName();
         Optional<Producer> existingProducer = producerRepository.findByProducerIdentidad(producerIdp);
-        Optional<Farm> existingfarmAndProducer =farmRepository.findByFarmNameAndProducerId(farmName, existingProducer.get());
+        Optional<Farm> existingfarmAndProducer =farmRepository.findByFarmNameAndProducer_ProducerId(farmName, existingProducer.get().getProducerId());
 
         //Optional<Farm> existingFarm=farmRepository.findByFarmId(farmDto.)
         Farm farm = null;

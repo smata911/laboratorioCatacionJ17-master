@@ -27,6 +27,10 @@ public class SampleDto {
     @JsonProperty("sample_id")
     private String sampleId;
 
+    @JsonProperty("farm_id")
+    private Farm farmId;
+
+
 
     @Min(value = 50, message = "La humedad de la muestra debe ser mayor a 9")
     @Max(value = 250,message = "tiene que ser menor a 13")

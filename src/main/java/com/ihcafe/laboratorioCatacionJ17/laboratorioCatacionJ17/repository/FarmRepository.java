@@ -8,8 +8,10 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 @Repository
-public interface FarmRepository  extends JpaRepository<Farm,String> {
+public interface FarmRepository extends JpaRepository<Farm, String> {
 
     Optional<Farm> findByFarmId(String s);
-    Optional<Farm> findByFarmNameAndProducerId(String farmName, Producer producer);
+
+    // Usa producer_ProducerId en lugar de producerId
+    Optional<Farm> findByFarmNameAndProducer_ProducerId(String farmName, String producerId);
 }

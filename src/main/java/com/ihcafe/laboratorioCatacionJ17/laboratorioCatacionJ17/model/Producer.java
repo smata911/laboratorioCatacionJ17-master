@@ -1,6 +1,7 @@
 package com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.model;
 
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.model.status.ModelStatus;
 import jakarta.persistence.*;
 import lombok.*;
@@ -36,12 +37,14 @@ public class Producer {
     @Column(name = "producer_gender",nullable = false)
     private int producerGender;
 
-//    @OneToMany(mappedBy = "producer",
-//            cascade = {CascadeType.REFRESH,CascadeType.MERGE,CascadeType.PERSIST})
-//    @Builder.Default
-//    private List<Sample> producerSample=new ArrayList<>();
+  //@OneToMany(mappedBy = "producer",
+    //    cascade = {CascadeType.REFRESH,CascadeType.MERGE,CascadeType.PERSIST})
+ //@JsonManagedReference // Maneja la relación
+ //private List<Farm> producerFarm=new ArrayList<>();
 
-
+    @OneToMany(mappedBy = "producer", cascade = {CascadeType.REFRESH, CascadeType.MERGE, CascadeType.PERSIST})
+    @JsonManagedReference // Maneja la relación
+    private List<Farm> producerFarm = new ArrayList<>();
 
     @Column(name = "student_status", nullable = false)
     @Enumerated(EnumType.ORDINAL)

@@ -14,6 +14,10 @@ public interface SampleService {
      */
     SampleDto saveSample(String producerIdp,SampleDto sampleDto);
 
+
+
+    SampleDto updateSample(String sampleId,SampleDto roastDto);
+
     /**
      * Find a student by its ID.
      * @param sampleId String

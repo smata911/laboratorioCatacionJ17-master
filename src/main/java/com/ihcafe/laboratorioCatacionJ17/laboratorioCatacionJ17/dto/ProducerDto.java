@@ -15,13 +15,13 @@ import lombok.*;
 @JsonSerialize
 @Builder
 @Getter
-@Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Setter
 
 public class ProducerDto {
 
-    @JsonProperty("producerId")
+    @JsonProperty("producer_id")
     private String producerId;
 
     @JsonProperty(required = true)

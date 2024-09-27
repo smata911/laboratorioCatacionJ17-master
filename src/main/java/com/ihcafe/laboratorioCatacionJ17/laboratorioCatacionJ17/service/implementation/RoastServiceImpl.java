@@ -72,6 +72,7 @@ public class RoastServiceImpl implements RoastService{
         if (existingRoastOpt.isPresent() ) {
             existingRoast = existingRoastOpt.get();
             // Actualizar los campos del Roast existente con los datos del RoastDto
+            existingRoast.setRoastWeight(roastDto.getRoastWeight());
             existingRoast.setRoastTemperature(roastDto.getRoastTemperature());
         }else{
             System.out.println("Roast not found with sampleId");
@@ -86,7 +87,7 @@ public class RoastServiceImpl implements RoastService{
             updatedTemperatures.add(temperature);
         }
 
-        boolean existenTemperatures=temperatureListBaseDatos.size()==getTemperatureDto.size();
+        boolean existenTemperatures=temperatureListBaseDatos.size()==getTemperatureDto.size();//no tiene sentido
         if (existenTemperatures){
             System.out.println("existe todoo");
             // Actualizar las temperaturas en el Roast
