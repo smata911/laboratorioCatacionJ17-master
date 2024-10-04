@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 //import javax.validation.Valid;
@@ -20,6 +21,7 @@ public class ProducerController {
     private final ProducerService producerService;
     private final Messages messages;
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     public ResponseEntity<? extends Response<ProducerDto>> saveProducer(@RequestBody @Valid ProducerDto producerDto) {
         ProducerDto savedProducer = producerService.saveProducer(producerDto);
         BaseResponse<ProducerDto> producerBaseResponse = new BaseResponse<>();
@@ -28,12 +30,14 @@ public class ProducerController {
     }
 
     @GetMapping(value = "/{producerId}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     public ResponseEntity<? extends ProducerDto> findByProducerId(@PathVariable final String producerId) {
         ProducerDto retrievedStudent = producerService.findProducertById(producerId);
         return new ResponseEntity<>(retrievedStudent, HttpStatus.OK);
     }
 
     @PutMapping("/{producerId}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     public ResponseEntity<? extends Response<ProducerDto>> updateProducer(
             @PathVariable("producerId") String producerId,
             @RequestBody @Valid ProducerDto producerDto) {

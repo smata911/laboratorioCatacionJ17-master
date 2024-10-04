@@ -14,6 +14,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,6 +29,7 @@ public class SampleController {
     private  final ProducerRepository producerRepository;
 
     @PostMapping("/{producerId}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     public ResponseEntity<? extends Response<SampleDto>> saveRoast(
             @PathVariable("producerId")String producerId,
             @Valid @RequestBody  SampleDto sampleDto) {
@@ -39,6 +41,7 @@ public class SampleController {
     }
 
     @PutMapping("/{sampleId}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     public ResponseEntity<? extends Response<SampleDto>> updateSample(
             @PathVariable("sampleId") String sampleId,
             @RequestBody @Valid SampleDto sampleDto) {

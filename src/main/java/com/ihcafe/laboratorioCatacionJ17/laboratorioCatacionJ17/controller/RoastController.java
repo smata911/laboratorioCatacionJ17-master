@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 //import javax.validation.Valid;
@@ -27,6 +28,8 @@ import java.util.Optional;
 public class RoastController {
     private  final RoastService roastService;
     @PostMapping("/{sampleId}")// VERIFICAR EL SAMPLE WEIGHT LA CANTIDAD DISPONIBLE. ESTO DEBE IR EN EL IMPLEMENT
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
+
     public ResponseEntity<? extends Response<RoastDto>> saveRoast(
             @PathVariable("sampleId")String sampleId,
             @RequestBody @Valid RoastDto RoastDto) {
@@ -36,6 +39,7 @@ public class RoastController {
                 .buildResponseEntity(HttpStatus.CREATED, "Rast saved successfully", savedRoast);
     }
     @PutMapping("/{RoastId}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     public ResponseEntity<? extends Response<RoastDto>> updateRoast(
             @PathVariable("RoastId") String roastId,
             @RequestBody @Valid RoastDto roastDto) {
