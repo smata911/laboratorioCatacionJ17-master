@@ -18,7 +18,7 @@ public interface ProducerMapper {
 
     List<Producer> dtoToProducer(List<ProducerDto> dtos);
 
-    List<ProducerDto> producerToDto(List<Producer> producer);
 
+    List<ProducerDto> producerToDto(List<Producer> producer);
 
 }

@@ -6,7 +6,9 @@ import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.model.status.Mod
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -22,48 +24,49 @@ import java.util.UUID;
 public class Producer {
 
     @Id
-    @Column(name = "producer_id",nullable = false,length = 64)
+    @Column(name = "producer_id", nullable = false, length = 64)
     private String producerId;
 
-    @Column(name = "producer_identidad",nullable = false)
-    private  String producerIdentidad;
+    @Column(name = "producer_identidad", nullable = false)
+    private String producerIdentidad;
 
-    @Column(name = "producer_first_name",nullable = false)
+    @Column(name = "producer_first_name", nullable = false)
     private String producerFirstName;
 
-    @Column(name = "producer_last_name",nullable = false)
+    @Column(name = "producer_last_name", nullable = false)
     private String producerLastName;
 
-    @Column(name = "producer_gender",nullable = false)
+    @Column(name = "producer_gender", nullable = false)
     private int producerGender;
 
-  //@OneToMany(mappedBy = "producer",
-    //    cascade = {CascadeType.REFRESH,CascadeType.MERGE,CascadeType.PERSIST})
- //@JsonManagedReference // Maneja la relación
- //private List<Farm> producerFarm=new ArrayList<>();
 
-    @OneToMany(mappedBy = "producer", cascade = {CascadeType.REFRESH, CascadeType.MERGE, CascadeType.PERSIST})
-    @JsonManagedReference // Maneja la relación
+    @Column(name = "producer_fechaRegistro", nullable = false)
+    private LocalDate producerFechaRegistro; // Usa LocalDate
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "producer_id")
+    @JsonManagedReference // Esta anotación evita la serialización recursiva
     private List<Farm> producerFarm = new ArrayList<>();
 
     @Column(name = "student_status", nullable = false)
     @Enumerated(EnumType.ORDINAL)
     private ModelStatus producerStatus;
-    /**falta agencia* la relacion*/
 
 
 
-    public static Producer buildFromDto(Producer producer){
+    public static Producer buildFromDto(Producer producer) {
+
         producer.setProducerId(UUID.randomUUID().toString());
         producer.setProducerStatus(ModelStatus.ACTIVE);
+        producer.setProducerFechaRegistro(LocalDate.now());
+        for (Farm farm : producer.getProducerFarm()) {
+            farm.setFarmId(UUID.randomUUID().toString());  // Generar un ID único para cada finca
+            farm.setProducer(producer);                    // Asociar la finca al productor
+        }
         return producer;
     }
 
-   // private void setProducerId(final String producerId){
-    //    this.producerId = producerId;
-    //}
-
-    public void setProducerStatus(ModelStatus modelStatus){
+    public void setProducerStatus(ModelStatus modelStatus) {
         this.producerStatus = modelStatus;
     }
 }

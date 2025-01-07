@@ -31,7 +31,7 @@ public class Temperature {
     private double temperatureHeat;
 
     @Column(name = "temperature_minute",nullable = false,length = 40)
-    private String temperature_minute;
+    private double temperature_minute;
 
     @Column(name = "temperature_temperature",nullable = false,length = 30)
     private double temperatureTemperature;

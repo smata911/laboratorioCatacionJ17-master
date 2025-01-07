@@ -4,6 +4,9 @@ import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.model.Producer;
 
 public class ProducerNotFoundException extends ResourceNotFoundException {
 
+    public ProducerNotFoundException(String s) {
+    }
+
     /**
      *
      * @param field

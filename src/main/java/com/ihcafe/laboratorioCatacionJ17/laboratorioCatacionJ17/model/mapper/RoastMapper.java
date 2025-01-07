@@ -7,6 +7,7 @@ import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.dto.RoastDto;
 import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.model.Roast;
 import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.model.Sample;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
 import java.util.List;
 
@@ -15,15 +16,14 @@ public interface RoastMapper {
 
     Roast dtoToRoast(RoastDto dto);
 
-   RoastDto roastToDto(Roast roast);
+
+    RoastDto roastToDto(Roast roast);
 
     List<Roast> dtotoRoast(List<RoastDto> dtos);
 
-     List<RoastDto> roastToDto(List<Roast> roast);
+    List<RoastDto> roastToDto(List<Roast> roast);
 
-    Sample roastS(String value);
 
-    String roasS(Sample sample);
 
 
 }

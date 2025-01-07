@@ -28,9 +28,14 @@ public class Varieties {
     @Column(name = "varieties_scientific",length = 40)
     private String varietiesScientific;
 
-    @ManyToMany(mappedBy = "varietiesSample")
-    //@JsonBackReference // Evita el bucle recursivo en la serialización
-    private List<Sample> sampleVarieties = new ArrayList<>();
+    @ManyToOne
+    @JoinColumn(name = "sample_id")
+    @JsonBackReference
+    private Sample sample;
+
+    //@ManyToMany(mappedBy = "varietiesSample")
+   // @JsonBackReference // Evita el bucle recursivo en la serialización
+   // private List<Sample> sampleVarieties = new ArrayList<>();
 
 
 //    @ManyToMany(mappedBy = "varietiesSample",

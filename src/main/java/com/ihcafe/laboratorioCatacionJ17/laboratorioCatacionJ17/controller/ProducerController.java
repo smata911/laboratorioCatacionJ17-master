@@ -7,11 +7,15 @@ import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.utils.MessageKey
 import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.utils.Messages;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 //import javax.validation.Valid;
 
 @RestController
@@ -21,7 +25,8 @@ public class ProducerController {
     private final ProducerService producerService;
     private final Messages messages;
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
+    //@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
+    @PreAuthorize("hasAuthority('WRITING_PRODUCER')")
     public ResponseEntity<? extends Response<ProducerDto>> saveProducer(@RequestBody @Valid ProducerDto producerDto) {
         ProducerDto savedProducer = producerService.saveProducer(producerDto);
         BaseResponse<ProducerDto> producerBaseResponse = new BaseResponse<>();
@@ -30,14 +35,29 @@ public class ProducerController {
     }
 
     @GetMapping(value = "/{producerId}")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
+    @PreAuthorize("hasAuthority('READ_PRODUCER')")
+    //@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     public ResponseEntity<? extends ProducerDto> findByProducerId(@PathVariable final String producerId) {
         ProducerDto retrievedStudent = producerService.findProducertById(producerId);
         return new ResponseEntity<>(retrievedStudent, HttpStatus.OK);
     }
 
+    @GetMapping(value = "/lista")
+    @PreAuthorize("hasAuthority('READ_PRODUCER')")
+    //@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
+    public ResponseEntity<Page<ProducerDto>> findAll(
+            @RequestParam(required = false) String producerIdentidad,
+            Pageable pageable) {
+
+        Page<ProducerDto> retrievedProducers = producerService.getProducerIdentidadContainingIgnoreCase(producerIdentidad,pageable);
+
+        // Devolver la lista de productores en la respuesta con código 200 OK
+        return new ResponseEntity<>(retrievedProducers, HttpStatus.OK);
+    }
+
     @PutMapping("/{producerId}")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
+    //@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
+    @PreAuthorize("hasAuthority('UPDATE_PRODUCER')")
     public ResponseEntity<? extends Response<ProducerDto>> updateProducer(
             @PathVariable("producerId") String producerId,
             @RequestBody @Valid ProducerDto producerDto) {
@@ -46,7 +66,8 @@ public class ProducerController {
         // Construir la respuesta
         BaseResponse<ProducerDto> producerBaseResponse = new BaseResponse<>();
         return producerBaseResponse
-                .buildResponseEntity(HttpStatus.OK, "Producer updated successfully"+messages.getMessage(MessageKey.ENTITY_UPDATE.getKey()), updatedProducer);
+                .buildResponseEntity(HttpStatus.OK, "Producer " +
+                        "updated successfully"+messages.getMessage(MessageKey.ENTITY_UPDATE.getKey()), updatedProducer);
     }
 
 

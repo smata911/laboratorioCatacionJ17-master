@@ -21,12 +21,12 @@ public class TypeSample {
     private int typeSampleId;
 
     @Column(name = "typeSample_name",nullable = false,length = 25)
-    private int typeSampleName;
+    private String typeSampleName;
 
-    @OneToMany(mappedBy ="typeSample",
-            cascade = {CascadeType.REFRESH,CascadeType.MERGE,CascadeType.PERSIST})
-    @Builder.Default
-    private List<Sample> typeSampleSample= new ArrayList<>();
+   // @OneToMany(mappedBy ="typeSample",
+    //        cascade = {CascadeType.REFRESH,CascadeType.MERGE,CascadeType.PERSIST})
+    //@Builder.Default
+   // private List<Sample> typeSampleSample= new ArrayList<>();
 
 
 }

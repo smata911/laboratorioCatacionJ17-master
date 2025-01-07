@@ -22,10 +22,10 @@ public class TypeMarket {
     @Column(name = "typeMarket_name",nullable = false,length = 35)
     private String typeMarketName;
 
-    @OneToMany(mappedBy ="typeMarket" ,
-            cascade = {CascadeType.REFRESH,CascadeType.MERGE,CascadeType.PERSIST})
-    @Builder.Default
-    private List<Sample> typeMarketSample=new ArrayList<>();
+   // @OneToMany(mappedBy ="typeMarket" ,
+    //        cascade = {CascadeType.REFRESH,CascadeType.MERGE,CascadeType.PERSIST})
+  //  @Builder.Default
+  //  private List<Sample> typeMarketSample=new ArrayList<>();
 
 
 }

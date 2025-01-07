@@ -15,51 +15,73 @@ import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.repository.Tempe
 import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.service.RoastService;
 import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.utils.Messages;
 import lombok.RequiredArgsConstructor;
+import org.apache.tomcat.util.bcel.Const;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class RoastServiceImpl implements RoastService{
-
+    private final String statusSample ="TuesteFinallizado";
     private final RoastRepository roastRepository;
     private  final SampleRepository sampleRepository;
     private final RoastMapper roastMapper;
     private final SampleMapper sampleMapper;
     private final TemperatureRepository temperatureRepository;
     private final TemperatureMapper temperatureMapper;
-
+    private double newCountSample;
+    private String ROAST_STATUS="sinSesion";
     private final Messages messages;
     @Override
-    public RoastDto saveRoast(final String sampleIdp,final RoastDto roastDto) {
-        Roast roast=null;
-        Optional<Sample> existingSample= sampleRepository.findBySampleId(sampleIdp);
-        if (existingSample.isPresent()) {
-            System.out.println(existingSample.get().getSampleId());
-            Sample sample = existingSample.get();
-            roast = Roast.buildFromDto(this.roastMapper.dtoToRoast(roastDto),sample);
-            // Iterar sobre las Temperaturas en RoastDto y mapearlas a entidades Temperature
-            List<Temperature> listTemperatures = new ArrayList<>();
-            for (Temperature temperature : roastDto.getRoastTemperature()) {
-                // Temperature temperature = temperatureMapper.dtoToTemperature(temperatureDto);
-                temperature.setRoast(roast);
-                Temperature temperatureuid =Temperature.buildFromDto(temperature);
-                listTemperatures.add(temperatureuid);
-            }//todo falta validar que los minutos sean diferentes mediante el roast_id
-            // Asignar las Temperaturas mapeadas a Roast
-            roast.setRoastTemperature(listTemperatures);
-            //System.out.println(roastDto.getSampleId());
-        }else if (existingSample.isEmpty()){
-            System.out.println("la muestra no se encuentra");
-        }
-        this.roastRepository.save(roast);
-        return roastMapper.roastToDto(roast);
+    public RoastDto saveRoast(final String sampleIdp, final RoastDto roastDto) {
 
+
+        Roast roast=null;
+        roastDto.setRoastStatus(ROAST_STATUS);
+        Optional<Sample> existingSample = sampleRepository.findBySampleId(sampleIdp);
+        System.out.println(sampleIdp);
+        if (existingSample.isPresent()) {
+
+            //todo aqui llamar el metodo para restarle a peso muestra y cambiar status
+
+            Sample sample = existingSample.get();
+            newCountSample=sample.getSampleWeight()-roastDto.getRoastWeight();
+            if (newCountSample>=0){
+                sample.setSampleStatus(statusSample);
+                sample.setSampleWeight(newCountSample);
+
+                 roast = Roast.buildFromDto(this.roastMapper.dtoToRoast(roastDto), sample);
+                List<Temperature> listTemperatures = new ArrayList<>();
+                for (Temperature tempDto : roastDto.getRoastTemperature()) {
+                    Temperature temperature = Temperature.buildFromDto(tempDto);
+                    temperature.setRoast(roast);
+                    listTemperatures.add(temperature);
+                }
+
+                roast.setRoastTemperature(listTemperatures);
+                roast = this.roastRepository.save(roast);
+
+
+            }else {
+                System.out.println("El peso de la muestra no puede ser negativo o cero.");
+                return null; // Devolver null si el nuevo peso no es válido
+            }
+            return roastMapper.roastToDto(roast);
+
+        } else {
+            System.out.println("La muestra no se encuentra");
+            return null;
+        }
     }
+
 
     @Override
     public RoastDto updateRoast(final String roastId, final RoastDto roastDto) {//todo mejorar los nombres de las variables y quitar
@@ -101,7 +123,66 @@ public class RoastServiceImpl implements RoastService{
         return roastMapper.roastToDto(existingRoast);
     }
 
+//    @Override
+//    public List<RoastDto> getAllRoast() {
+//        List<Roast> roastss=roastRepository.findAll();
+//        for (Roast roast : roastss) {
+//            // Verifica que roast.getRoastTemperature() no sea null
+//            if (roast.getRoastTemperature() != null) {
+//                roast.getRoastTemperature().sort(Comparator.comparing(Temperature::getTemperature_minute));
+//            }
+//        }
+//        return roastMapper.roastToDto(roastss);
+//    }
 
+
+    public Page<RoastDto> getRoastsBySampleNumeroMuestra(String sampleNumeroMuestra, Pageable pageable) {
+
+
+        Page<Roast> roastPage = roastRepository.findBySample_sampleNumeroMuestraContainingIgnoreCaseAndRoastStatus(sampleNumeroMuestra,"sinSesion", pageable);
+
+
+        roastPage.getContent().forEach(roast ->
+                roast.getRoastTemperature().sort(
+                        (temp1, temp2) -> Double.compare(temp1.getTemperature_minute(), temp2.getTemperature_minute())
+                )
+        );
+        // Convertir el contenido del Page usando el mapper
+        List<RoastDto> roastDtoList = roastMapper.roastToDto(roastPage.getContent());
+
+
+
+
+
+
+        // Crear un nuevo Page<RoastDto> con el contenido convertido
+        return new PageImpl<>(roastDtoList, pageable, roastPage.getTotalElements());
+    }
+
+
+
+    public Page<RoastDto> getRoastsBySampleNumeroMuestraAll(String sampleNumeroMuestra, Pageable pageable) {
+
+
+        Page<Roast> roastPage = roastRepository.findBySample_sampleNumeroMuestraContainingIgnoreCase(sampleNumeroMuestra, pageable);
+
+
+        roastPage.getContent().forEach(roast ->
+                roast.getRoastTemperature().sort(
+                        (temp1, temp2) -> Double.compare(temp1.getTemperature_minute(), temp2.getTemperature_minute())
+                )
+        );
+        // Convertir el contenido del Page usando el mapper
+        List<RoastDto> roastDtoList = roastMapper.roastToDto(roastPage.getContent());
+
+
+
+
+
+
+        // Crear un nuevo Page<RoastDto> con el contenido convertido
+        return new PageImpl<>(roastDtoList, pageable, roastPage.getTotalElements());
+    }
     @Override
     public ProducerDto findRoastById(String roastId) throws ProducerNotFoundException {
         return null;

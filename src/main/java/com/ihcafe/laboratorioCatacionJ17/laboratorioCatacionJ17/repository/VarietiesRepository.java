@@ -14,7 +14,6 @@ public interface VarietiesRepository extends JpaRepository<Varieties,String> {
    // List<Varieties> findAllByIdIn(List<String> ids);
     List<Varieties> findAllByVarietiesIdIn(List<String> ids);
 
-
-
-
+    @Override
+    List<Varieties> findAll();
 }

@@ -18,30 +18,43 @@ import java.io.IOException;
 
 @Component
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
+
     @Autowired
     private JwtUtils jwtUtils;
 
-
     @Autowired
     private UserDetailServiceImpl userDetailService;
+
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,
                                     @NonNull HttpServletResponse response,
-                                    @NonNull  FilterChain filterChain) throws ServletException, IOException {
+                                    @NonNull FilterChain filterChain) throws ServletException, IOException {
 
-        String tokenHeader =request.getHeader("Authorization");
-        if(tokenHeader!=null && tokenHeader.startsWith("Bearer ")){
-            String token=tokenHeader.substring(7);
+        // Obtener el token del encabezado Authorization
+        String tokenHeader = request.getHeader("Authorization");
 
-            if(jwtUtils.isTokenValid(token)){
-                String userName=jwtUtils.getUserName(token);
-                UserDetails userDetails= userDetailService.loadUserByUsername(userName);
-                UsernamePasswordAuthenticationToken authenticationToken=new UsernamePasswordAuthenticationToken(userName,null,userDetails.getAuthorities());
+        // Verificar si el token tiene el formato correcto (comienza con "Bearer ")
+        if (tokenHeader != null && tokenHeader.startsWith("Bearer ")) {
+            String token = tokenHeader.substring(7);
+            if (jwtUtils.isTokenValid(token)) {
+                String userName = jwtUtils.getUserName(token);
+
+                // Cargar los detalles del usuario
+                UserDetails userDetails = userDetailService.loadUserByUsername(userName);
+
+                // Crear el objeto de autenticación con los detalles completos del usuario y sus autoridades
+                UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+                        userDetails, // UserDetails completo
+                        null, // No es necesario incluir la contraseña
+                        userDetails.getAuthorities() // Las autoridades del usuario (roles y permisos)
+                );
+
+                // Establecer el contexto de seguridad
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-
             }
-
         }
-        filterChain.doFilter(request,response);
+
+        // Continuar con el siguiente filtro en la cadena
+        filterChain.doFilter(request, response);
     }
 }

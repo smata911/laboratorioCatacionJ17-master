@@ -3,10 +3,14 @@ package com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 //import jakarta.validation.constraints.*;
+import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.model.Farm;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
-
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 
 //import javax.validation.constraints.*;
@@ -39,13 +43,18 @@ public class ProducerDto {
     @Size(min = 2, max = 32, message = "El campo 'producerFirstName' debe tener entre 2 y 32 caracteres.")
     private String producerLastName;
 
-    @JsonProperty(required = true)
+    @JsonProperty()
     @Positive(message = "El campo 'producerGender' debe ser un número positivo.")
-    @Max(value =1, message = "El maximo es 1")
+    @Max(value =2, message = "El maximo es 1")
     private Integer producerGender;
 
+
+    @JsonProperty(required = false)
+
+    private LocalDate producerFechaRegistro;
+
     // Otros campos opcionales
-    // @JsonProperty("producerSample")
-    // @Builder.Default
-    // private List<Sample> producerSample = new ArrayList<>();
+    @JsonProperty(required = true)
+     @Builder.Default
+     private List<Farm> producerFarm = new ArrayList<>();
 }

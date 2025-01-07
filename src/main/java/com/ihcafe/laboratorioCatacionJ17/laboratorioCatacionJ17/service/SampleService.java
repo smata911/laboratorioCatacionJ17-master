@@ -1,9 +1,12 @@
 package com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.service;
 
+import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.dto.EstudiesDto;
 import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.dto.ProducerDto;
 import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.dto.SampleDto;
 import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.exception.ProducerNotFoundException;
 import org.springframework.data.domain.Page;
+
+import java.util.List;
 
 public interface SampleService {
     /**
@@ -17,6 +20,10 @@ public interface SampleService {
 
 
     SampleDto updateSample(String sampleId,SampleDto roastDto);
+
+    List<SampleDto> getAllSample(String statu);
+
+    List<SampleDto>getFarmId(String farm);
 
     /**
      * Find a student by its ID.

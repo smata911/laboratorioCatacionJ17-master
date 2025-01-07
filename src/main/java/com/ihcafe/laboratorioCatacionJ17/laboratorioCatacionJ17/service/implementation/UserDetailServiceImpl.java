@@ -25,11 +25,26 @@ public class UserDetailServiceImpl implements UserDetailsService {
         UserEntity userEntity=userRepository.findByUserName(username)
                 .orElseThrow(()->new UsernameNotFoundException("EL USUARIO"+username+"no existe"));
 
-        Collection<? extends GrantedAuthority> authorities=userEntity.getRoles().stream().map(role-> new SimpleGrantedAuthority("ROLE_".concat(role.getName().name())))
+       // Collection<? extends GrantedAuthority> authorities=userEntity.getRoles().stream().map(role-> new SimpleGrantedAuthority("ROLE_".concat(role.getName().name())))
+        //        .collect(Collectors.toSet());
+       // Collection<? extends GrantedAuthority> authorities = userEntity.getRoles().stream()
+        //        .flatMap(role -> role.getPermissions().stream()
+         //               .map(permission -> new SimpleGrantedAuthority(permission.getName()))) // Asumiendo que tienes una lista de permisos en cada rol
+         //       .collect(Collectors.toSet());
+        // Autoridades de permisos
+        Collection<GrantedAuthority> authorities = userEntity.getRoles().stream()
+                .flatMap(role -> role.getPermissions().stream()
+                        .map(permission -> new SimpleGrantedAuthority(permission.getName())))
                 .collect(Collectors.toSet());
 
+        // Autoridades de roles (con el prefijo ROLE_)
+        authorities.addAll(userEntity.getRoles().stream()
+                .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getName().name()))
+                .collect(Collectors.toSet()));
+        System.out.println(authorities);
         return new User(userEntity.getUserName(),
                 userEntity.getPassword(),
+
                 true,
                 true,
                 true,

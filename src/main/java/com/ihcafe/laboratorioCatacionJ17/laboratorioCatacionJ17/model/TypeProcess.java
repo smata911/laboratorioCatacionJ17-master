@@ -1,6 +1,8 @@
 package com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.model;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import java.util.ArrayList;
@@ -16,13 +18,13 @@ import java.util.List;
 public class TypeProcess {
 
     @Id
-    @Column(name = "typeProcess_id",nullable = false,length = 1)
+    @Column(name = "typeProcess_id", nullable = false, length = 1)
     private int typeProcessId;
 
-    @Column(name = "typeProcess_name",nullable = false,length = 25)
-    private  String typeProcessName;
+    @Column(name = "typeProcess_name", nullable = false, length = 25)
+    private String typeProcessName;
 
-    @OneToMany(mappedBy ="typeProcess",
-            cascade = {CascadeType.REFRESH,CascadeType.MERGE,CascadeType.PERSIST})
-    private List<Sample> typeProcessSample=new ArrayList<>();
+   // @OneToMany(mappedBy = "typeProcess", cascade = {CascadeType.REFRESH, CascadeType.MERGE, CascadeType.PERSIST})
+    //@JsonManagedReference
+    //private List<ModelosTueste> modelosTueste = new ArrayList<>();
 }

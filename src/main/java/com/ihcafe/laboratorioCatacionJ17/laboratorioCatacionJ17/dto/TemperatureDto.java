@@ -30,7 +30,7 @@ public class TemperatureDto {
 
     @JsonProperty(required = true)
     @Size(min = 3, max = 64)
-    private  String temperature_minute;
+    private  double temperature_minute;
 
     @JsonProperty(required = true)
     private double temperatureTemperature;

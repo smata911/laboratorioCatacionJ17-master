@@ -2,15 +2,9 @@ package com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.service.impleme
 import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.dto.ProducerDto;
 import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.dto.SampleDto;
 import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.exception.ProducerNotFoundException;
-import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.model.Farm;
-import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.model.Producer;
-import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.model.Sample;
-import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.model.Varieties;
+import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.model.*;
 import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.model.mapper.SampleMapper;
-import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.repository.FarmRepository;
-import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.repository.ProducerRepository;
-import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.repository.SampleRepository;
-import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.repository.VarietiesRepository;
+import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.repository.*;
 import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.service.SampleService;
 import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.utils.Messages;
 import jakarta.persistence.EntityNotFoundException;
@@ -30,6 +24,7 @@ public class SampleServiceImpl implements SampleService{
     private  final SampleRepository sampleRepository;
     private final FarmRepository farmRepository;
     private  final VarietiesRepository varietiesRepository;
+    private final EstudiesRepository estudiesRepository;
 
     private final SampleMapper sampleMapper;
 
@@ -40,20 +35,35 @@ public class SampleServiceImpl implements SampleService{
         Sample sample = null;
         Optional<Farm> existingFarm = farmRepository.findByFarmId(farmIdp);
         String farmId=null;
-        List<String> varietyIds = sampleDto.getSampleVarieties()
+        List<String> varietyIds = sampleDto.getVarietiesSample()
                 .stream()
                 .map(Varieties::getVarietiesId)
                 .collect(Collectors.toList());
         List<Varieties> existingVarieties = varietiesRepository.findAllByVarietiesIdIn(varietyIds);
-        boolean allExist=existingFarm.isPresent() && existingVarieties.size()== varietyIds.size();
+
+
+        List<String> estudiesIds = sampleDto.getSampleEstudies()
+                .stream()
+                .map(Estudies::getEstudiesId)
+                .collect(Collectors.toList());
+        List<Estudies> existingEstudies = estudiesRepository.findAllByEstudiesIdIn(estudiesIds);
+        boolean allExist=existingFarm.isPresent() &&
+                existingVarieties.size()== varietyIds.size() &&
+                existingEstudies.size()==estudiesIds.size();
 
         if (allExist) {
             Farm farm = existingFarm.get();
             List<Varieties> varietiesList =new ArrayList<>();
-            for (Varieties var : sampleDto.getSampleVarieties()){
+            List<Estudies> estudiesList=new ArrayList<>();
+
+            for (Varieties var : sampleDto.getVarietiesSample()){//todo con mapper
                varietiesList.add(var);
             }
-            sample = Sample.buildFromDto(this.sampleMapper.dtoToSample(sampleDto), farm,varietiesList);
+
+            for (Estudies valor :sampleDto.getSampleEstudies()){
+                estudiesList.add(valor);
+            }
+            sample = Sample.buildFromDto(this.sampleMapper.dtoToSample(sampleDto), farm,varietiesList,estudiesList);
 
         } else {
             System.out.println("Recuerda modificar los mensajes ");
@@ -74,7 +84,7 @@ public class SampleServiceImpl implements SampleService{
         Optional<Farm> existingFarm = farmRepository.findByFarmId(farmid); // Verificar que farmId exista
 
         // Obtener los IDs de las variedades desde el DTO
-        List<String> varietyIds = sampleDto.getSampleVarieties()
+        List<String> varietyIds = sampleDto.getVarietiesSample()
                 .stream()
                 .map(Varieties::getVarietiesId)
                 .collect(Collectors.toList());
@@ -82,8 +92,21 @@ public class SampleServiceImpl implements SampleService{
         // Buscar las variedades existentes por sus IDs
         List<Varieties> existingVarieties = varietiesRepository.findAllByVarietiesIdIn(varietyIds);
 
+
+        // Obtener los IDs de las estudies desde el DTO
+        List<String> estudiesIds = sampleDto.getSampleEstudies()
+                .stream()
+                .map(Estudies::getEstudiesId)
+                .collect(Collectors.toList());
+
+        // Buscar las variedades existentes por sus IDs
+        List<Estudies> existingEstudies = estudiesRepository.findAllByEstudiesIdIn(estudiesIds);
+
         // Validar si existen tanto la muestra, la granja y las variedades
-        boolean allExist = existingSampleOpt.isPresent() && existingFarm.isPresent() && existingVarieties.size() == varietyIds.size();
+        boolean allExist = existingSampleOpt.isPresent() &&
+                existingFarm.isPresent() &&
+                existingVarieties.size() == varietyIds.size() &&
+                existingEstudies.size()==estudiesIds.size();
 
 
         Sample existingSample = existingSampleOpt.get();
@@ -94,6 +117,7 @@ public class SampleServiceImpl implements SampleService{
 
             // Actualizar los campos de la muestra con los valores del DTO
             existingSample.setFarm(farm);
+            existingSample.setSampleNumeroMuestra(sampleDto.getSampleNumeroMuestra());
             existingSample.setSampleWeight(sampleDto.getSampleWeight());
             existingSample.setSamplePercentageHumidity(sampleDto.getSamplePercentageHumidity());
             existingSample.setTypeSample(sampleDto.getTypeSample());
@@ -104,6 +128,7 @@ public class SampleServiceImpl implements SampleService{
 
             // Actualizar la relación ManyToMany con variedades
             existingSample.setVarietiesSample(existingVarieties);
+            existingSample.setEstudiesSample(existingEstudies);
 
         } else {
             // Manejo de errores en caso de que algo no exista
@@ -116,6 +141,19 @@ public class SampleServiceImpl implements SampleService{
 
         // Retornar el DTO actualizado
         return sampleMapper.sampleToDto(existingSample);
+    }
+
+    @Override
+    public List<SampleDto> getAllSample(String statu) {
+        List<Sample> sampless = sampleRepository.findAllExceptFinalizado( statu);
+        return sampleMapper.sampleToDto(sampless);
+    }
+
+    @Override
+    public List<SampleDto> getFarmId(String farmId) {
+        List<Sample> samples=sampleRepository.findByFarm_FarmId(farmId);
+
+        return sampleMapper.sampleToDto(samples);
     }
 
 

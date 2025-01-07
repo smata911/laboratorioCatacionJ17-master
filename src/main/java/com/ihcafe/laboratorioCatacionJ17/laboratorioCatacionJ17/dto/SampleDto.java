@@ -27,16 +27,17 @@ public class SampleDto {
     @JsonProperty("sample_id")
     private String sampleId;
 
+    @Size(min = 8 ,max = 9,message = "man es 8, max es 9")
+    private String sampleNumeroMuestra;
+
     @JsonProperty("farm_id")
     private Farm farmId;
 
-
-
-    @Min(value = 50, message = "La humedad de la muestra debe ser mayor a 9")
-    @Max(value = 250,message = "tiene que ser menor a 13")
+    @Min(value = 100, message = "La SampleWeight debe ser mayor a 50")
+    @Max(value = 2000,message = "tiene que ser menor a 250")
     private double sampleWeight;
 
-    @Min(value = 10, message = "La humedad de la muestra debe ser mayor a 9")
+    @Min(value = 1, message = "La humedad de la muestra debe ser mayor a 9")
     @Max(value = 13,message = "tiene que ser menor a 13")
     private double samplePercentageHumidity;
 
@@ -59,5 +60,8 @@ public class SampleDto {
     private String sampleStatus;
 
     @Builder.Default
-    private List<Varieties> sampleVarieties = new ArrayList<>();
+    private List<Varieties> varietiesSample  = new ArrayList<>();
+
+    @Builder.Default
+    private List<Estudies> sampleEstudies = new ArrayList<>();
 }

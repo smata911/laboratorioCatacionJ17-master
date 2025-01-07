@@ -21,37 +21,39 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+import org.springframework.security.core.GrantedAuthority;
 
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
-    //@Autowired
-    private JwtUtils jwtUtils;
-    public JwtAuthenticationFilter(JwtUtils jwtUtils){
-        this.jwtUtils=jwtUtils;
+
+    private final JwtUtils jwtUtils;
+
+    public JwtAuthenticationFilter(JwtUtils jwtUtils) {
+        this.jwtUtils = jwtUtils;
     }
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request,
                                                 HttpServletResponse response) throws AuthenticationException {
-        UserEntity userEntity=null;
-        String userName="";
-        String password="";
-
+        UserEntity userEntity = null;
+        String userName = "";
+        String password = "";
 
         try {
-            userEntity=new ObjectMapper().readValue(request.getInputStream(),UserEntity.class);
-            userName=userEntity.getUserName();
-
-            password=userEntity.getPassword();
-
-        } catch (StreamReadException e) {
-            throw new RuntimeException(e);
-        } catch (DatabindException e) {
-            throw new RuntimeException(e);
+            userEntity = new ObjectMapper().readValue(request.getInputStream(), UserEntity.class);
+            userName = userEntity.getUserName();
+            password = userEntity.getPassword();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Error reading user input", e);
         }
-        UsernamePasswordAuthenticationToken authenticationToken=new UsernamePasswordAuthenticationToken(userName,password);
+
+        // Crear el token de autenticación con username y password
+        UsernamePasswordAuthenticationToken authenticationToken =
+                new UsernamePasswordAuthenticationToken(userName, password);
+
         return getAuthenticationManager().authenticate(authenticationToken);
     }
 
@@ -59,20 +61,32 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     protected void successfulAuthentication(HttpServletRequest request,
                                             HttpServletResponse response,
                                             FilterChain chain, Authentication authResult) throws IOException, ServletException {
-        User user=(User) authResult.getPrincipal();
-        String token=jwtUtils.generateAccesToken(user.getUsername());
-        response.addHeader("Authorization", token);
-        Map<String,Object> httpResponse=new HashMap<>();
 
-        httpResponse.put("token",token);
-        httpResponse.put("Message","Autenticacion correcta");
-        httpResponse.put("UserName",user.getUsername());
+        User user = (User) authResult.getPrincipal(); // Obtenemos el objeto User autenticado
+
+        // Obtener las autoridades (roles y permisos)
+        Set<String> authorities = user.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toSet());
+
+        // Generar el token JWT con las autoridades incluidas
+        String token = jwtUtils.generateAccesToken(user.getUsername(), authorities);
+
+        // Añadir el token al encabezado con el formato "Bearer"
+        response.addHeader("Authorization", "Bearer " + token);
+
+        // Crear respuesta HTTP
+        Map<String, Object> httpResponse = new HashMap<>();
+        httpResponse.put("token", token);
+        httpResponse.put("message", "Autenticación correcta");
+        httpResponse.put("userName", user.getUsername());
 
         response.getWriter().write(new ObjectMapper().writeValueAsString(httpResponse));
         response.setStatus(HttpStatus.OK.value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.getWriter().flush();
 
+        // Continuar con el flujo normal
         super.successfulAuthentication(request, response, chain, authResult);
     }
 }

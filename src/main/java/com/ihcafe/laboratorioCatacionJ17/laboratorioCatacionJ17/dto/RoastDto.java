@@ -6,10 +6,12 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.model.Roast;
 import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.model.Sample;
 import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.model.Temperature;
+import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.model.TypeSample;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.*;
+import org.hibernate.query.sql.internal.ParameterRecognizerImpl;
 
 
 import java.util.ArrayList;
@@ -22,6 +24,9 @@ import java.util.List;
 @NoArgsConstructor
 @Setter
 public class RoastDto {
+
+    @JsonProperty("roast_id")
+    private String roastId;
 
     @JsonProperty(required = true)
     @NotBlank(message = "El campo roastDate no puede estar vacío.")
@@ -39,6 +44,21 @@ public class RoastDto {
     @JsonProperty(value = "roastTemperature",required = true)
     @Builder.Default
     private List<Temperature> roastTemperature = new ArrayList<>();
+
+    @JsonProperty(required = true)
+    @Min(value = 20,message = "peso tueste mayor a 20")
+    private Double roastAfterWeight;
+
+    @JsonProperty(required = false)
+    private String roastStatus;
+
+
+
+    @JsonProperty(required = true)
+    private  Sample sample;
+
+
+
 
 
 }

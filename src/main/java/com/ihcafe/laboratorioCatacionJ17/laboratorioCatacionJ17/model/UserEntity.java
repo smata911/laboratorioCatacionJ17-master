@@ -18,7 +18,7 @@ import java.util.Set;
 @Getter
 @Setter
 
-
+//hasta aqui
 public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,7 +36,12 @@ public class UserEntity {
     @NotBlank
     private  String password;
 
+
     @ManyToMany(fetch = FetchType.EAGER,targetEntity = RoleEntity.class,cascade=CascadeType.PERSIST)
     @JoinTable(name="user_roles", joinColumns=@JoinColumn(name = "user_id"),inverseJoinColumns = @JoinColumn(name="role_id"))
     private Set<RoleEntity> roles;
+
+    @ManyToOne(fetch = FetchType.LAZY) // Many users belong to one company
+    @JoinColumn(name = "empresa_id", nullable = false) // Foreign key column
+    private Empresa empresa;
 }

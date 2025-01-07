@@ -1,5 +1,6 @@
 package com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.dto;
 
+import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.model.Empresa;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -30,4 +31,7 @@ public class CreateUserDTO {
     private  String password;
 
     private Set<String> roles;
+
+
+    private Empresa Codempresa;
 }

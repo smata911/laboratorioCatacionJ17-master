@@ -4,6 +4,7 @@ import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.dto.CreateUserDT
 import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.model.ERole;
 import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.model.RoleEntity;
 import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.model.UserEntity;
+import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.repository.RoleRepository;
 import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.repository.UserRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,13 @@ public class PrincipalController {
     @Autowired
     private UserRepository userRepository;
 
+
+
+    @Autowired
+    private RoleRepository roleRepository;
+
+
+
     @GetMapping("/hello")
     public String hello(){
         return "hollo word not secured";
@@ -33,27 +41,27 @@ public class PrincipalController {
     public String helloSecured(){
         return "hollo word segured";
     }
-
+//aqui
     @PostMapping("/createUser")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
-    public ResponseEntity<?>createUser(@Valid @RequestBody  CreateUserDTO createUserDTO){
-        //esta logica tiene que ir en el impl
-        Set<RoleEntity> roles=createUserDTO.getRoles().stream()
-                .map(role -> RoleEntity.builder()
-                .name(ERole.valueOf(role))
-                        .build())
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> createUser(@Valid @RequestBody CreateUserDTO createUserDTO) {
+        Set<RoleEntity> roles = createUserDTO.getRoles().stream()
+                .map(role -> roleRepository.findByName(ERole.valueOf(role))
+                        .orElseThrow(() -> new RuntimeException("Error: Role not found.")))
                 .collect(Collectors.toSet());
 
-        UserEntity userEntity= UserEntity.builder()
-                .userName(createUserDTO.getUsername())
-                .password(passwordEncoder.encode(createUserDTO.getPassword()))
-                .email(createUserDTO.getEmail())
-                .roles(roles)
-                .build();
+        UserEntity userEntity = new UserEntity();
+        userEntity.setUserName(createUserDTO.getUsername());
+        userEntity.setPassword(passwordEncoder.encode(createUserDTO.getPassword()));
+        userEntity.setEmail(createUserDTO.getEmail());
+        userEntity.setRoles(roles);
+        userEntity.setEmpresa(createUserDTO.getCodempresa());
+
         userRepository.save(userEntity);
         return ResponseEntity.ok(userEntity);
-
     }
+
+
 @DeleteMapping("/deleteUser")
 @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 

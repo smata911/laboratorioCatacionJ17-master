@@ -2,9 +2,12 @@ package com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.model;
 
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.repository.ProducerRepository;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+
 import jakarta.persistence.*;
 import lombok.*;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +26,9 @@ public class Sample {
     @Column(name = "sample_id",nullable = false,length = 64)
     private String sampleId;
 
+    @Column(name = "sample_NumeroMuestra",nullable = false,length = 9)
+    private String sampleNumeroMuestra;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "farm_id")
     @JsonBackReference // Evita el bucle recursivo
@@ -34,11 +40,11 @@ public class Sample {
     @Column(name = "sample_porcentage_humidity",nullable = false)
     private  double samplePercentageHumidity;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "typeSample_id")
     private TypeSample typeSample;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "typeProcess_id")
     private TypeProcess typeProcess;
 
@@ -50,7 +56,7 @@ public class Sample {
 
     /*relacion de quien lo inserto*/
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "typeMarket_id")
     private TypeMarket  typeMarket;
 
@@ -64,15 +70,31 @@ public class Sample {
     @Builder.Default
     private List<Varieties> varietiesSample=new ArrayList<>();
 
-    @OneToMany(mappedBy = "sampleId",
-            cascade = {CascadeType.REFRESH,CascadeType.MERGE,CascadeType.PERSIST})
-    @Builder.Default
-    private List<Roast> sampleRoast=new ArrayList<>();
 
-    public static Sample buildFromDto(Sample sample, Farm farm, List<Varieties> variedadesList) {
+    @ManyToMany(fetch = FetchType.EAGER,
+            cascade = {CascadeType.PERSIST})
+    @JoinTable(
+            name = "tblHestudiesSample",
+            joinColumns = @JoinColumn(name = "sample_id"),
+            inverseJoinColumns = @JoinColumn(name = "estudies_id")
+    )
+    @Builder.Default
+  //  @JsonManagedReference // Agrega esta anotación
+    private List<Estudies> estudiesSample=new ArrayList<>();
+
+    @OneToMany(mappedBy = "sample", cascade = {CascadeType.REFRESH, CascadeType.MERGE, CascadeType.PERSIST})
+    //@JsonManagedReference // o @JsonIgnore si no necesitas serializar la relación
+    @JsonIgnore
+    @Builder.Default
+    private List<Roast> sampleRoast = new ArrayList<>();
+
+    public static Sample buildFromDto(Sample sample, Farm farm, List<Varieties> variedadesList,List<Estudies> estudiesList) {
         sample.setSampleId(UUID.randomUUID().toString());
         sample.setFarm(farm);
         sample.setVarietiesSample(variedadesList);
+        sample.setEstudiesSample(estudiesList);
+
+
 
         return sample;
     }

@@ -3,6 +3,9 @@ package com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.service;
 import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.dto.ProducerDto;
 import com.ihcafe.laboratorioCatacionJ17.laboratorioCatacionJ17.exception.ProducerNotFoundException;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
+import java.util.List;
 
 public interface ProducerService {
     /**
@@ -14,6 +17,10 @@ public interface ProducerService {
     ProducerDto saveProducer(ProducerDto producerDto);
     ProducerDto updateProducer(final String producerId,ProducerDto producerDto);
 
+   // List<ProducerDto> getAllProducers();
+
+    //Page<ProducerDto>getProducerByproducerProducerIdentidad(String producerProducerIdentidad, Pageable pageable);
+    Page<ProducerDto> getProducerIdentidadContainingIgnoreCase(String producerIdentidad, Pageable pageable);
     /**
      * Find a student by its ID.
      * @param producerId String
